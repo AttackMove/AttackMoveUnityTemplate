@@ -16,12 +16,6 @@ public class MouseDetection : MonoBehaviour, ISingletonInstance
 
     private bool _isIPadOrIOS = false;
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-    // JavaScript interop for reliable iPad/iOS detection via user agent
-    [DllImport("__Internal")]
-    private static extern int IsIPadOrIOSJS();
-#endif
-
     void Start()
     {
         // Detect iPad/iOS - Safari on iPad simulates mouse events for touch
@@ -58,11 +52,7 @@ public class MouseDetection : MonoBehaviour, ISingletonInstance
 
     private bool IsIPadOrIOS()
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
-        // Use JavaScript user agent detection - most reliable for WebGL
-        // This matches the detection used in the HTML template
-        return IsIPadOrIOSJS() != 0;
-#elif UNITY_IPHONE || UNITY_IOS
+#if UNITY_IPHONE || UNITY_IOS
         return true;
 #else
         // Fallback: try SystemInfo.operatingSystem (may not be reliable in WebGL)
