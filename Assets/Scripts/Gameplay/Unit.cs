@@ -3,11 +3,11 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-public class Unit : NetworkBehaviour
+public class Unit : Entity
 {
-    public int Team;
     public bool Visible;
     public BoxCollider SelectionCollider;
+    public float Health;
 
     #region Gameplay Stats
     public float MoveSpeed;
@@ -19,28 +19,24 @@ public class Unit : NetworkBehaviour
     public bool IsDead { get; private set; }
     public bool DontGroupSelect { get; private set; }
 
-    public static int Team0 = 0;
-    public static int Team1 = 1;
-    public static int AnyTeam = -1;
+    protected Vector3? _destination;
+    public Vector3? Destination => _destination;
 
-    private GameWorld _world;
-    private Vector3? _destination;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    protected override void Init()
     {
-        _world = Get.Instance<GameWorld>();
         _world.Add(this);
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void DoUpdate(float deltaTime)
     {
         UpdateMove(Time.deltaTime);
     }
 
     protected virtual void UpdateMove(float deltaTime)
     {
+        if (!isServer)
+            return;
+
         if (_destination == null)
             return;
 
@@ -70,6 +66,7 @@ public class Unit : NetworkBehaviour
     public bool CanSee(Unit unit)
     {
         var direction = unit.transform.position - transform.position;
+
         var ray = new Ray(transform.position, direction);
         var hits = Physics.RaycastAll(ray, direction.magnitude, _world.BlockVisionLayerMask).OrderBy(x => x.distance);
 
@@ -82,8 +79,8 @@ public class Unit : NetworkBehaviour
                     continue;
             }
 
-            // Hit the unit we were looking for
-            if (hitUnit == unit)
+            var hitUnitWeWant = hitUnit == unit;
+            if (hitUnit)
                 return true;
 
             return false;
@@ -92,17 +89,38 @@ public class Unit : NetworkBehaviour
         return true;
     }
 
-    public void OnDestroy()
+    protected override void DeInit()
     {
-        if (Get.ShuttingDown)
-            return;
-
+        base.DeInit();
         _world.Remove(this);
     }
 
-    [Command]
-    internal void CmdMoveTo(Vector3 moveTo)
+    internal virtual void MoveTo(Vector3 moveTo)
     {
         _destination = moveTo;
     }
+
+    [Command]
+    public void CmdMoveTo(Vector3 destination)
+    {
+        MoveTo(destination);
+    }
+
+    [Server]
+    internal void Damage(float amount)
+    {
+        Health -= amount;
+
+        if(Health <= 0)
+        {
+            Get.Instance<Fx>().RpcSpawnExplosion(transform.position, 2f);
+            NetworkServer.Destroy(gameObject);
+        }
+    }
+}
+
+public abstract class UnitBase : NetworkBehaviour
+{
+    protected abstract void Start();
+    protected abstract void Update();
 }
