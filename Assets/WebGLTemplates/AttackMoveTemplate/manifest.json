@@ -1,0 +1,33 @@
+{
+  "name": "{{{ PRODUCT_NAME }}}",
+  "short_name": "{{{ PRODUCT_NAME }}}",
+  "description": "YOUR_APP_DESCRIPTION",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "TemplateData/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "TemplateData/android-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "TemplateData/android-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}
+
