@@ -1,0 +1,7 @@
+{
+  "siteUrl": "https://example.com/your-game",
+  "ogImageUrl": "https://example.com/og-image.png",
+  "metaDescription": "A short description for search and social sharing.",
+  "ogImageAlt": "Screenshot or key art for the game",
+  "appDescription": "Short description for the PWA manifest (e.g. same as metaDescription)."
+}
