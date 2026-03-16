@@ -644,6 +644,8 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
+  AutoStartSingleplayer: 1
+  ClientConnectTimeoutSeconds: 5
 --- !u!4 &585570642
 Transform:
   m_ObjectHideFlags: 0
